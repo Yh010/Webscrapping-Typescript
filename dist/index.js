@@ -15,35 +15,45 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const cheerio_1 = require("cheerio");
 const format_1 = require("@fast-csv/format");
-const products = [];
-function getResponseDatafromSite() {
+function scrapeSite() {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield axios_1.default.get("https://www.scrapingcourse.com/ecommerce/");
-        const data = response.data;
-        const $ = (0, cheerio_1.load)(data);
-        $("li.product").each((i, productHTMLElement) => {
-            const url = $(productHTMLElement).find("a").first().attr("href");
-            const image = $(productHTMLElement).find("img").first().attr("src");
-            const name = $(productHTMLElement).find("h2").first().text();
-            const price = $(productHTMLElement).find("span").first().text();
-            const product = {
-                Url: url,
-                Image: image,
-                Name: name,
-                Price: price
-            };
-            products.push(product);
-        });
-        // extract the data of interest from the product node
-        for (const product of products) {
-            console.log(product.Url);
-            console.log(product.Image);
-            console.log(product.Name);
-            console.log(product.Price);
-            console.log(`\n`);
-            console.log(`\n`);
+        const products = [];
+        const firstPage = "https://www.scrapingcourse.com/ecommerce/page/1/";
+        const pagesToScrape = [firstPage];
+        const pagesDiscovered = [firstPage];
+        let i = 1;
+        const limit = 5;
+        while (pagesToScrape.length !== 0 && i <= limit) {
+            const pageURL = pagesToScrape.shift();
+            const response = yield axios_1.default.get("https://www.scrapingcourse.com/ecommerce/");
+            const html = response.data;
+            const $ = (0, cheerio_1.load)(html);
+            $("a.page-numbers").each((j, paginationHTMLElement) => {
+                const paginationURL = $(paginationHTMLElement).attr("href");
+                if (paginationURL && !pagesDiscovered.includes(paginationURL)) {
+                    pagesDiscovered.push(paginationURL);
+                    if (!pagesToScrape.includes(paginationURL)) {
+                        pagesToScrape.push(paginationURL);
+                    }
+                }
+            });
+            $("li.product").each((i, productHTMLElement) => {
+                const url = $(productHTMLElement).find("a").first().attr("href");
+                const image = $(productHTMLElement).find("img").first().attr("src");
+                const name = $(productHTMLElement).find("h2").first().text();
+                const price = $(productHTMLElement).find("span").first().text();
+                const product = {
+                    Url: url,
+                    Image: image,
+                    Name: name,
+                    Price: price
+                };
+                products.push(product);
+            });
+            i++;
         }
-        (0, format_1.writeToPath)("products.csv", products, { headers: true }).on("error", error => console.error(error));
+        (0, format_1.writeToPath)("products.csv", products, { headers: true })
+            .on("error", error => console.error(error));
     });
 }
-getResponseDatafromSite();
+scrapeSite();
