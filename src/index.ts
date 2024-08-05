@@ -25,7 +25,19 @@ async function scrapeSite() {
     while (pagesToScrape.length !== 0 && i <= limit) {
         const pageURL = pagesToScrape.shift()
 
-        const response = await axios.get("https://www.scrapingcourse.com/ecommerce/")
+        const response = await axios.get(
+            "https://www.scrapingcourse.com/ecommerce/",
+            {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+                },
+                proxy: {
+                    protocol: "http",
+                    host: "51.89.14.70",
+                    port: 80,
+                },
+            }
+        )
         const html = response.data
         const $ = load(html)
 

@@ -25,7 +25,16 @@ function scrapeSite() {
         const limit = 5;
         while (pagesToScrape.length !== 0 && i <= limit) {
             const pageURL = pagesToScrape.shift();
-            const response = yield axios_1.default.get("https://www.scrapingcourse.com/ecommerce/");
+            const response = yield axios_1.default.get("https://www.scrapingcourse.com/ecommerce/", {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
+                },
+                proxy: {
+                    protocol: "http",
+                    host: "51.89.14.70",
+                    port: 80,
+                },
+            });
             const html = response.data;
             const $ = (0, cheerio_1.load)(html);
             $("a.page-numbers").each((j, paginationHTMLElement) => {
