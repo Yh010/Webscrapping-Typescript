@@ -15,6 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const cheerio_1 = require("cheerio");
 const format_1 = require("@fast-csv/format");
+const puppeteer_1 = __importDefault(require("puppeteer"));
+function scrapeUsingPuppeteer() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const browser = yield puppeteer_1.default.launch();
+        const page = yield browser.newPage();
+        yield page.goto('https://example.com');
+        const titleNode = yield page.$('h1');
+        const title = yield page.evaluate(el => el === null || el === void 0 ? void 0 : el.innerText, titleNode);
+        const link = yield page.$eval('a', anchor => anchor.getAttribute('href'));
+        console.log({ title, link });
+    });
+}
 function scrapeSite() {
     return __awaiter(this, void 0, void 0, function* () {
         const products = [];
@@ -65,4 +77,5 @@ function scrapeSite() {
             .on("error", error => console.error(error));
     });
 }
-scrapeSite();
+/*TODO: SCRAPING WITH HEADLESS BROWSER USING PUPPETER: https://www.zenrows.com/blog/puppeteer-web-scraping#use*/
+scrapeUsingPuppeteer();

@@ -1,12 +1,27 @@
 import axios from "axios"
 import { load } from "cheerio"
 import { writeToPath } from "@fast-csv/format"
+import puppeteer from "puppeteer";
 
 type Product = {
     Url?: string
     Image?: string
     Name?: string
     Price?: string
+}
+
+async function scrapeUsingPuppeteer() {
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.goto('https://example.com'); 
+ 
+
+    const titleNode = await page.$('h1'); 
+    const title = await page.evaluate(el => el?.innerText, titleNode); 
+    
+    const link = await page.$eval('a', anchor => anchor.getAttribute('href')); 
+    
+    console.log({ title, link })
 }
 
 async function scrapeSite() {
@@ -76,5 +91,5 @@ async function scrapeSite() {
     writeToPath("products.csv", products, { headers: true })
         .on("error", error => console.error(error));
 }
-/*TODO: SCRAPING WITH HEADLESS BROWSER USING PUPPETER: https://www.zenrows.com/blog/puppeteer-web-scraping#use wewweeew*/
-scrapeSite()
+/*TODO: SCRAPING WITH HEADLESS BROWSER USING PUPPETER: https://www.zenrows.com/blog/puppeteer-web-scraping#use*/
+scrapeUsingPuppeteer()
