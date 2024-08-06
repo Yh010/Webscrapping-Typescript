@@ -18,8 +18,22 @@ const format_1 = require("@fast-csv/format");
 const puppeteer_1 = __importDefault(require("puppeteer"));
 function scrapeUsingPuppeteer() {
     return __awaiter(this, void 0, void 0, function* () {
-        const browser = yield puppeteer_1.default.launch();
+        const browser = yield puppeteer_1.default.launch({
+            args: ['--proxy-server=23.26.236.11:3128'],
+        });
         const page = yield browser.newPage();
+        yield page.setRequestInterception(true);
+        page.on('request', interceptedRequest => {
+            if (interceptedRequest.url().endsWith('.png') ||
+                interceptedRequest.url().endsWith('.jpg') ||
+                interceptedRequest.url().includes('.png?') ||
+                interceptedRequest.url().includes('.jpg?')) {
+                interceptedRequest.abort();
+            }
+            else {
+                interceptedRequest.continue();
+            }
+        });
         yield page.goto('https://www.youtube.com/watch?v=tmNXKqeUtJM');
         const videosTitleSelector = '#items h3 #video-title';
         yield page.waitForSelector(videosTitleSelector);
