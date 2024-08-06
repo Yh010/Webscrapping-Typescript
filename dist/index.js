@@ -25,6 +25,17 @@ function scrapeUsingPuppeteer() {
         yield page.waitForSelector(videosTitleSelector);
         const titles = yield page.$$eval(videosTitleSelector, titles => titles.map(title => title.innerText));
         console.log(titles);
+        const videoLinks = yield page.$$eval('#items .details a', links => links.map(link => link.href));
+        console.log(videoLinks);
+        const cookieConsentSelector = 'tp-yt-paper-dialog .eom-button-row:first-child ytd-button-renderer:first-child';
+        yield page.waitForSelector(cookieConsentSelector);
+        page.click(cookieConsentSelector);
+        yield new Promise(resolve => setTimeout(resolve, 1000));
+        const searchInputEl = yield page.$('#search-form input');
+        yield (searchInputEl === null || searchInputEl === void 0 ? void 0 : searchInputEl.type('top 10 songs'));
+        yield (searchInputEl === null || searchInputEl === void 0 ? void 0 : searchInputEl.press('Enter'));
+        yield page.waitForSelector('ytd-two-column-search-results-renderer ytd-video-renderer');
+        yield page.screenshot({ path: 'youtube_search.png', fullPage: true });
         yield browser.close();
     });
 }

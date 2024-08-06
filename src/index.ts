@@ -1,3 +1,4 @@
+import { WaitTimeoutOptions } from './../node_modules/puppeteer-core/lib/cjs/puppeteer/api/Page.d';
 import axios from "axios"
 import { load } from "cheerio"
 import { writeToPath } from "@fast-csv/format"
@@ -23,6 +24,27 @@ async function scrapeUsingPuppeteer() {
 	); 
 	console.log(titles ); 
  
+
+    const videoLinks = await page.$$eval( 
+	'#items .details a', 
+	links => links.map(link => link.href) 
+    ); 
+    
+    console.log(videoLinks);
+
+    const cookieConsentSelector = 'tp-yt-paper-dialog .eom-button-row:first-child ytd-button-renderer:first-child'; 
+ 
+    await page.waitForSelector(cookieConsentSelector); 
+    page.click(cookieConsentSelector); 
+    await new Promise(resolve => setTimeout(resolve, 1000)); 
+
+    const searchInputEl = await page.$('#search-form input'); 
+    await searchInputEl?.type('top 10 songs'); 
+    await searchInputEl?.press('Enter');
+    await page.waitForSelector('ytd-two-column-search-results-renderer ytd-video-renderer'); 
+    await page.screenshot({ path: 'youtube_search.png', fullPage: true });
+
+
 	await browser.close(); 
 }
 
