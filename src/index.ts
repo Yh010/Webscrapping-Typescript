@@ -76,5 +76,5 @@ async function scrapeSite() {
     writeToPath("products.csv", products, { headers: true })
         .on("error", error => console.error(error));
 }
-/*TODO: SCRAPING WITH HEADLESS BROWSER USING PUPPETER: https://www.zenrows.com/blog/puppeteer-web-scraping#use */
+/*TODO: SCRAPING WITH HEADLESS BROWSER USING PUPPETER: https://www.zenrows.com/blog/puppeteer-web-scraping#use wewww*/
 scrapeSite()
