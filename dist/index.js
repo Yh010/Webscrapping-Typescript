@@ -20,11 +20,12 @@ function scrapeUsingPuppeteer() {
     return __awaiter(this, void 0, void 0, function* () {
         const browser = yield puppeteer_1.default.launch();
         const page = yield browser.newPage();
-        yield page.goto('https://example.com');
-        const titleNode = yield page.$('h1');
-        const title = yield page.evaluate(el => el === null || el === void 0 ? void 0 : el.innerText, titleNode);
-        const link = yield page.$eval('a', anchor => anchor.getAttribute('href'));
-        console.log({ title, link });
+        yield page.goto('https://www.youtube.com/watch?v=tmNXKqeUtJM');
+        const videosTitleSelector = '#items h3 #video-title';
+        yield page.waitForSelector(videosTitleSelector);
+        const titles = yield page.$$eval(videosTitleSelector, titles => titles.map(title => title.innerText));
+        console.log(titles);
+        yield browser.close();
     });
 }
 function scrapeSite() {

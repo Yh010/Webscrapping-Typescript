@@ -13,15 +13,17 @@ type Product = {
 async function scrapeUsingPuppeteer() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-    await page.goto('https://example.com'); 
+    await page.goto('https://www.youtube.com/watch?v=tmNXKqeUtJM'); 
  
-
-    const titleNode = await page.$('h1'); 
-    const title = await page.evaluate(el => el?.innerText, titleNode); 
-    
-    const link = await page.$eval('a', anchor => anchor.getAttribute('href')); 
-    
-    console.log({ title, link })
+	const videosTitleSelector = '#items h3 #video-title'; 
+	await page.waitForSelector(videosTitleSelector); 
+	const titles = await page.$$eval( 
+		videosTitleSelector, 
+		titles => titles.map(title =>  (title as HTMLElement).innerText) 
+	); 
+	console.log(titles ); 
+ 
+	await browser.close(); 
 }
 
 async function scrapeSite() {
