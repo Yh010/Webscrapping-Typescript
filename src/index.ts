@@ -14,6 +14,20 @@ type Product = {
 async function scrapeUsingPuppeteer() {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
+    await page.setRequestInterception(true); 
+     
+    page.on('request', interceptedRequest => { 
+        if ( 
+            interceptedRequest.url().endsWith('.png') || 
+            interceptedRequest.url().endsWith('.jpg') || 
+            interceptedRequest.url().includes('.png?') || 
+            interceptedRequest.url().includes('.jpg?') 
+        ) { 
+            interceptedRequest.abort(); 
+        } else { 
+            interceptedRequest.continue(); 
+        } 
+    }); 
     await page.goto('https://www.youtube.com/watch?v=tmNXKqeUtJM'); 
  
 	const videosTitleSelector = '#items h3 #video-title'; 
