@@ -12,7 +12,9 @@ type Product = {
 }
 
 async function scrapeUsingPuppeteer() {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ 
+		args: ['--proxy-server=23.26.236.11:3128'], 
+	});
     const page = await browser.newPage();
     await page.setRequestInterception(true); 
      
